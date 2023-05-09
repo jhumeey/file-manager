@@ -10,18 +10,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-const navigation = [
-  { name: "Home", href: "#" },
-  { name: "Invoices", href: "#" },
-  { name: "Clients", href: "#" },
-  { name: "Expenses", href: "#" },
-];
-const secondaryNavigation = [
-  { name: "Last 7 days", href: "#", current: true },
-  { name: "Last 30 days", href: "#", current: false },
-  { name: "All-time", href: "#", current: false },
-];
-
+const navigation = [{ name: "Home", href: "/" }];
 type LayoutProps = {
   children: React.ReactNode;
 };
@@ -116,27 +105,7 @@ export default function Layout({ children }: LayoutProps) {
         </Dialog>
       </header>
 
-      <main>
-        <div className="relative isolate overflow-hidden pt-16">
-          {/* Secondary navigation */}
-          <header className="pb-4 pt-6 sm:pb-6">
-            <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-6 px-4 sm:flex-nowrap sm:px-6 lg:px-8">
-              <h1 className="text-2xl font-medium leading-7 text-white">
-                File Manager
-              </h1>
-             
-              <a
-                href="#"
-                className="ml-auto flex items-center gap-x-1 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                <PlusSmallIcon className="-ml-1.5 h-5 w-5" aria-hidden="true" />
-                New invoice
-              </a>
-            </div>
-          </header>
-        </div>
-        <div className="max-w-7xl mx-auto">{children}</div>
-      </main>
+      <main>{children}</main>
     </div>
   );
 }
