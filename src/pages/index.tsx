@@ -25,12 +25,14 @@ function classNames(...classes: string[]) {
 const Home: NextPageWithLayout<Props> = (props) => {
   const [open, setOpen] = useState(false);
   const [currentBlobUrl, setBlobUrl] = useState("");
+  const [path, setPath] = useState("");
   function closeModal() {
     setOpen(false);
   }
 
-  function openModal(url) {
-    setBlobUrl(url);
+  function openModal(content) {
+    setBlobUrl(`${content.sha}`);
+    setPath(`${content.path}`);
     setOpen(true);
   }
   console.log(props.contents);
@@ -149,7 +151,7 @@ const Home: NextPageWithLayout<Props> = (props) => {
                                         "block px-4 py-2 text-sm"
                                       )}
                                       onClick={() =>
-                                        openModal(`${content.sha}`)
+                                        openModal(content)
                                       }
                                     >
                                       Edit
@@ -184,7 +186,7 @@ const Home: NextPageWithLayout<Props> = (props) => {
           </table>
         </div>
       </div>
-      <Modal open={open} closeModal={closeModal} currentBlob={currentBlobUrl} />
+      <Modal open={open} closeModal={closeModal} currentBlob={currentBlobUrl} path={path} />
     </div>
   );
 };

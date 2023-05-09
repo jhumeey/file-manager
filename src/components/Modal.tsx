@@ -1,13 +1,11 @@
 import { Menu, Transition, Dialog } from "@headlessui/react";
-import { Fragment, useState, useEffect } from "react";
-import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
+import { Fragment, useState, useEffect, useRef } from "react";
 import { octokit } from "@/utils/github-config";
-import base64 from "base64-js";
 import { Base64 } from "js-base64";
 
-export default function Modal({ open, closeModal, currentBlob }) {
+export default function Modal({ open, closeModal, currentBlob, path }) {
   const [content, setContent] = useState("");
-  console.log(currentBlob, "here....");
+  const preRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,6 +31,30 @@ export default function Modal({ open, closeModal, currentBlob }) {
 
     fetchData();
   }, [currentBlob]);
+
+  const handleSaveChanges = async () => {
+    if (preRef.current) {
+      const content = preRef.current;
+      const encodeChanges = Base64.encode(content.toString());
+      console.log(path);
+
+      try {
+        await octokit.request("PUT /repos/{owner}/{repo}/contents/{path}?ref=main", {
+          owner: "jhumeey",
+          repo: "file-manager",
+          path: `${path}`,
+          message: "a new commit message",
+          content: `${encodeChanges}`,
+          sha: `${currentBlob}`,
+          headers: {
+            "X-GitHub-Api-Version": "2022-11-28",
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching blob content:", error);
+      }
+    }
+  };
 
   return (
     <Transition appear show={open} as={Fragment}>
@@ -68,7 +90,12 @@ export default function Modal({ open, closeModal, currentBlob }) {
                   Edit File
                 </Dialog.Title>
                 <div className="mt-2">
-                  <pre contentEditable="true" className="w-auto">
+                  <pre
+                    contentEditable="true"
+                    className="w-auto"
+                    id="content"
+                    ref={preRef}
+                  >
                     {content}
                   </pre>
                 </div>
@@ -77,7 +104,7 @@ export default function Modal({ open, closeModal, currentBlob }) {
                   <button
                     type="button"
                     className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    onClick={closeModal}
+                    onClick={handleSaveChanges}
                   >
                     Save Changes
                   </button>
