@@ -1,17 +1,39 @@
 import type { ReactElement } from "react";
+import { Fragment, useState } from "react";
+import { Menu, Transition, Dialog } from "@headlessui/react";
 import type { NextPageWithLayout } from "./_app";
 import Layout from "@/layouts/main";
 import { GetServerSideProps } from "next";
 import { octokit } from "../utils/github-config";
-import { PlusSmallIcon, FolderIcon, DocumentIcon, EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
+import {
+  PlusSmallIcon,
+  FolderIcon,
+  DocumentIcon,
+  EllipsisHorizontalIcon,
+} from "@heroicons/react/20/solid";
+import Modal from "@/components/Modal";
 
 type Props = {
   repo: any;
   contents: any;
 };
 
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
 const Home: NextPageWithLayout<Props> = (props) => {
-  // console.log(props.contents)
+  const [open, setOpen] = useState(false);
+  const [currentBlobUrl, setBlobUrl] = useState("");
+  function closeModal() {
+    setOpen(false);
+  }
+
+  function openModal(url) {
+    setBlobUrl(url);
+    setOpen(true);
+  }
+  console.log(props.contents);
   const sortedData = props.contents.sort((a, b) => {
     // First, sort by type: "dir" comes before "file"
     if (a.type === "dir" && b.type === "file") {
@@ -19,12 +41,11 @@ const Home: NextPageWithLayout<Props> = (props) => {
     } else if (a.type === "file" && b.type === "dir") {
       return 1; // "file" comes first
     }
-  
     // If the types are the same or both are not "dir" or "file",
     // sort alphabetically based on the name
     return a.name.localeCompare(b.name);
   });
-  
+
   return (
     <div>
       {" "}
@@ -46,7 +67,7 @@ const Home: NextPageWithLayout<Props> = (props) => {
           </div>
         </header>
       </div>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div className="-mx-4 mt-8 sm:-mx-0">
           <table className="min-w-full divide-y divide-gray-600">
             <thead>
@@ -73,18 +94,89 @@ const Home: NextPageWithLayout<Props> = (props) => {
               {sortedData.map((content) => (
                 <tr key={content.name}>
                   <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                   <div className="flex gap-1 text-white">{content.type === "dir" ? <FolderIcon className="-ml-1.5 h-5 w-5" aria-hidden="true" /> :<DocumentIcon className="-ml-1.5 h-5 w-5" aria-hidden="true" />} <a> {content.name}</a></div>
+                    <div className="flex gap-1 text-white">
+                      {content.type === "dir" ? (
+                        <FolderIcon
+                          className="-ml-1.5 h-5 w-5"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <DocumentIcon
+                          className="-ml-1.5 h-5 w-5"
+                          aria-hidden="true"
+                        />
+                      )}{" "}
+                      <a href={content.html_url}> {content.name}</a>
+                    </div>
                   </td>
                   <td className="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 sm:table-cell">
                     <a> {content.size}</a>
                   </td>
                   <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                    <a
-                      href="#"
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      <EllipsisHorizontalIcon className="-ml-1.5 h-5 w-5" aria-hidden="true" /><span className="sr-only">, {content.name}</span>
-                    </a>
+                    <Menu as="div" className="relative inline-block text-left">
+                      <div>
+                        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 px-3 py-2 text-sm font-semibold text-white shadow-sm">
+                          <EllipsisHorizontalIcon
+                            className="-ml-1.5 h-5 w-5"
+                            aria-hidden="true"
+                          />
+                        </Menu.Button>
+                      </div>
+
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                          <div className="py-1">
+                            {content.type === "dir" ? (
+                              ""
+                            ) : (
+                              <>
+                                <Menu.Item>
+                                  {({ active }) => (
+                                    <a
+                                      href="#"
+                                      className={classNames(
+                                        active
+                                          ? "bg-gray-100 text-gray-900"
+                                          : "text-gray-700",
+                                        "block px-4 py-2 text-sm"
+                                      )}
+                                      onClick={() =>
+                                        openModal(`${content.sha}`)
+                                      }
+                                    >
+                                      Edit
+                                    </a>
+                                  )}
+                                </Menu.Item>
+                              </>
+                            )}
+                            <Menu.Item>
+                              {({ active }) => (
+                                <a
+                                  href="#"
+                                  className={classNames(
+                                    active
+                                      ? "bg-gray-100 text-gray-900"
+                                      : "text-gray-700",
+                                    "block px-4 py-2 text-sm"
+                                  )}
+                                >
+                                  Delete
+                                </a>
+                              )}
+                            </Menu.Item>
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </Menu>
                   </td>
                 </tr>
               ))}
@@ -92,6 +184,7 @@ const Home: NextPageWithLayout<Props> = (props) => {
           </table>
         </div>
       </div>
+      <Modal open={open} closeModal={closeModal} currentBlob={currentBlobUrl} />
     </div>
   );
 };
@@ -101,22 +194,33 @@ Home.getLayout = function getLayout(page: ReactElement) {
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const data = await octokit.request("GET /repos/{owner}/{repo}", {
-    owner: "jhumeey",
-    repo: "file-manager",
-    headers: {
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
-  });
-  const content = await octokit.request("GET /repos/{owner}/{repo}/contents", {
-    owner: "jhumeey",
-    repo: "file-manager",
-    headers: {
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
-  });
+  let data, content;
+  try {
+    data = await octokit.request("GET /repos/{owner}/{repo}", {
+      owner: "jhumeey",
+      repo: "file-manager",
+      headers: {
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
+  } catch (error) {
+    // Handle the error for the first request
+    console.error("Error occurred while fetching repo data:", error);
+  }
+  try {
+    content = await octokit.request("GET /repos/{owner}/{repo}/contents", {
+      owner: "jhumeey",
+      repo: "file-manager",
+      headers: {
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
+  } catch (error) {
+    // Handle the error for the second request
+    console.error("Error occurred while fetching contents:", error);
+  }
   return {
-    props: { repo: data.data, contents: content.data },
+    props: { repo: data?.data, contents: content?.data },
   };
 };
 

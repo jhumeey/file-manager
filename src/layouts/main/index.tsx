@@ -1,12 +1,7 @@
-import { Fragment, useState } from "react";
-import { Dialog, Menu, Transition } from "@headlessui/react";
+import { useState } from "react";
+import { Dialog, } from "@headlessui/react";
 import {
-  ArrowDownCircleIcon,
-  ArrowPathIcon,
-  ArrowUpCircleIcon,
   Bars3Icon,
-  EllipsisHorizontalIcon,
-  PlusSmallIcon,
 } from "@heroicons/react/20/solid";
 import { BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
