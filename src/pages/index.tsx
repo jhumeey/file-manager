@@ -4,6 +4,7 @@ import { Menu, Transition } from "@headlessui/react";
 import type { NextPageWithLayout } from "./_app";
 import Layout from "@/layouts/main";
 import { GetServerSideProps } from "next";
+import { useRouter } from 'next/router';
 import { octokit } from "../utils/github-config";
 import {
   FolderIcon,
@@ -26,6 +27,7 @@ const Home: NextPageWithLayout<Props> = (props) => {
   const [open, setOpen] = useState(false);
   const [currentFileContent, setFileContent] = useState("");
   const [path, setPath] = useState("");
+  const router = useRouter();
 
   function closeModal() {
     setOpen(false);
@@ -38,6 +40,7 @@ const Home: NextPageWithLayout<Props> = (props) => {
   }
 
   const handleDelete = async (content: FileObject) => {
+  
     const confirmation = confirm(
       `Are you sure you want to delete the follwoing ${content.type}: ${content.path}?`
     );
@@ -53,6 +56,8 @@ const Home: NextPageWithLayout<Props> = (props) => {
             "X-GitHub-Api-Version": "2022-11-28",
           },
         });
+        
+  router.reload();
       } catch (error) {
         console.error("Error fetching blob content:", error);
       }
