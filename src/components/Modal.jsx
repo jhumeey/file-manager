@@ -2,10 +2,12 @@ import { Transition, Dialog } from "@headlessui/react";
 import { Fragment, useState, useEffect, useRef } from "react";
 import { octokit } from "@/utils/github-config";
 import { Base64 } from "js-base64";
+import { useRouter } from 'next/router';
 
 export default function Modal({ open, closeModal, currentFileContent, path }) {
   const [content, setContent] = useState("");
   const preRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,6 +52,7 @@ export default function Modal({ open, closeModal, currentFileContent, path }) {
           },
         });
         closeModal();
+        router.reload();
       } catch (error) {
         console.error("Error fetching blob content:", error);
       }
