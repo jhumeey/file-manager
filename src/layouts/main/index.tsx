@@ -3,9 +3,9 @@ import { Dialog, } from "@headlessui/react";
 import {
   Bars3Icon,
 } from "@heroicons/react/20/solid";
-import { BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import Logo from "../../images/FM.svg"
+import Logo from "../../images/fm.svg"
 
 const navigation = [{ name: "Home", href: "/" }];
 type LayoutProps = {
@@ -28,7 +28,7 @@ export default function Layout({ children }: LayoutProps) {
               <span className="sr-only">Open main menu</span>
               <Bars3Icon className="h-5 w-5 text-gray-900" aria-hidden="true" />
             </button>
-            <Image src={Logo} width={50} height={50} alt="logo" />
+            <Image src={Logo} width={40} height={40} alt="logo" />
           </div>
           <nav className="hidden md:flex md:gap-x-11 md:text-sm font-medium md:leading-6 text-white">
             {navigation.map((item, itemIdx) => (

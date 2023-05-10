@@ -36,7 +36,7 @@ const Home: NextPageWithLayout<Props> = (props) => {
     setPath(`${content.path}`);
     setOpen(true);
   }
-  
+
   const handleDelete = async (content: FileObject) => {
     const confirmation = confirm(
       `Are you sure you want to delete the follwoing ${content.type}: ${content.path}?`
@@ -79,7 +79,7 @@ const Home: NextPageWithLayout<Props> = (props) => {
       <div className="relative isolate overflow-hidden pt-16">
         <header className="pb-4 pt-6 sm:pb-6">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-6 px-4 sm:flex-nowrap sm:px-6 lg:px-8">
-            <h1 className="text-2xl font-medium leading-7 text-gray-600 capitalize">
+            <h1 className="text-2xl font-medium leading-7 text-gray-500 capitalize">
               {props.repo.name}
             </h1>
           </div>
