@@ -36,7 +36,6 @@ export default function Modal({ open, closeModal, currentFileContent, path }) {
     if (preRef.current) {
       const content = preRef.current.textContent.trim();
       const encodeChanges = Base64.encode(content.toString());
-      console.log(path);
 
       try {
         await octokit.request("PUT /repos/{owner}/{repo}/contents/{path}", {
